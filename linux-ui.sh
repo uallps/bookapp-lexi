@@ -1,0 +1,69 @@
+name: CI
+
+# Compila BookApp en los tres sistemas. En Linux y Windows además la arranca,
+# pulsa los botones de la sesión (scripts en .github/scripts/) y guarda capturas.
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compilar los productos del proyecto de Xcode
+        run: |
+          for scheme in "BookApp" "BookApp Progreso"; do
+            xcodebuild -project BookApp.xcodeproj -scheme "$scheme" -destination 'platform=macOS' build CODE_SIGNING_ALLOWED=NO
+          done
+
+  linux:
+    runs-on: ubuntu-latest
+    container: swift:6.3-noble
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencias (GTK 4, pantalla virtual y clics)
+        run: |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq libgtk-4-dev libfontconfig-dev xvfb xdotool imagemagick fonts-dejavu
+      - name: Compilar
+        run: swift build --product BookApp
+      - name: Arrancar y probar la interfaz (producto base)
+        run: bash .github/scripts/linux-ui.sh
+      - name: Arrancar y probar la interfaz (trait Progreso)
+        run: bash .github/scripts/linux-ui.sh Progreso
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-ui
+          path: shots
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - uses: seanmiddleditch/gha-setup-vsdevenv@v5
+      - uses: compnerd/gha-setup-swift@v0.3.0
+        with:
+          branch: swift-6.3.3-release
+          tag: 6.3.3-RELEASE
+      - uses: actions/cache@v4
+        with:
+          path: .build
+          key: windows-build-${{ hashFiles('Package.swift', 'Package.resolved') }}
+          restore-keys: windows-build-
+      - name: Compilar
+        run: swift build --product BookApp
+      - name: Arrancar y probar la interfaz
+        run: ./.github/scripts/windows-ui.ps1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-ui
+          path: |
+            shots
+            *-out.txt
+            *-err.txt
