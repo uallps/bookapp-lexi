@@ -18,7 +18,8 @@ struct BookListView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(viewModel.books) { book in
+                // Filas de las características (controles y resúmenes), antes de los libros.
+                ForEach(visibleBooks) { book in
                     bookRow(book: book)
                 }
             }
@@ -33,11 +34,10 @@ struct BookListView: View {
 
     /// Una fila: enlace al detalle del libro, con menú contextual para borrarlo.
     private func bookRow(book: Book) -> some View {
-        NavigationLink(destination: BookDetailView(book: binding(for: book)) { progressSection(for: book) }) {
+        NavigationLink(destination: BookDetailView(book: binding(for: book)) { detailSections(for: book) }) {
             BookRowView(
                 book: book,
-                showProgress: config.enableProgress,
-                progressText: progressText(for: book),
+                extraInfo: extraInfo(for: book),
                 changeStatus: { viewModel.changeStatus(id: book.id) }
             )
             .contextMenu {
@@ -57,26 +57,34 @@ struct BookListView: View {
         )
     }
 
-    // MARK: - F1: Progreso (punto de variación en compilación)
+    // MARK: - Puntos de variación de las características
+    // Cada característica se engancha aquí con su `#if` (compilación) y su flag (ejecución).
 
-    /// Texto de progreso de un libro; nil si F1 no está compilada o el libro no tiene datos.
-    private func progressText(for book: Book) -> String? {
-#if Progreso
-        return progress.progress(for: book.id)?.summary
-#else
-        return nil
-#endif
+    /// Los libros que se muestran: los de la biblioteca que pasan todos los filtros activos.
+    /// Los filtros se encadenan: un libro se ve solo si pasa cada uno de ellos.
+    private var visibleBooks: [Book] {
+        let books = viewModel.books
+        return books
     }
 
-    /// Sección de progreso del detalle; vacía si F1 no está compilada o su flag está apagado.
+    /// Líneas extra de la fila de un libro, en el orden de las características.
+    private func extraInfo(for book: Book) -> [String] {
+        var info: [String] = []
+#if Progreso
+        if config.enableProgress, let summary = progress.progress(for: book.id)?.summary {
+            info.append(summary)
+        }
+#endif
+        return info
+    }
+
+    /// Secciones extra del detalle de un libro.
     @ViewBuilder
-    private func progressSection(for book: Book) -> some View {
+    private func detailSections(for book: Book) -> some View {
 #if Progreso
         if config.enableProgress {
             BookProgressSection(plugin: progress, bookID: book.id)
         }
-#else
-        EmptyView()
 #endif
     }
 }

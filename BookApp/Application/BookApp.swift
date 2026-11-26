@@ -5,18 +5,8 @@ struct BookApp: App {
     /// Una sola configuración para toda la app: la comparten Libros y Ajustes.
     @State private var config = AppConfig()
     @State private var selection: String? = "libros"
-#if Progreso
-    @State private var progress: ProgressPlugin
-#endif
-
     /// Los plugins se crean y se registran una sola vez, al arrancar la app.
-    init() {
-#if Progreso
-        let progress = ProgressPlugin()
-        PluginRegistry.shared.register(progress)
-        _progress = State(wrappedValue: progress)
-#endif
-    }
+    @State private var plugins = AppPlugins()
 
     var body: some Scene {
         WindowGroup {
@@ -30,9 +20,7 @@ struct BookApp: App {
                     .tabItem { Label("Ajustes", systemImage: "gearshape") }
             }
             .environment(config)
-#if Progreso
-            .environment(progress)
-#endif
+            .withPlugins(plugins)
 #else
             NavigationSplitView {
                 List(selection: $selection) {
@@ -55,9 +43,7 @@ struct BookApp: App {
                 }
             }
             .environment(config)
-#if Progreso
-            .environment(progress)
-#endif
+            .withPlugins(plugins)
 #endif
         }
     }
