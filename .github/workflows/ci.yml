@@ -66,6 +66,8 @@ jobs:
         run: swift build --product BookApp
       - name: Arrancar y probar la interfaz
         run: ./.github/scripts/windows-ui.ps1
+      - name: Probar la interfaz de las características originales
+        run: ./.github/scripts/windows-ui-originales.ps1 Favoritos
       - uses: actions/upload-artifact@v4
         if: always()
         with:
