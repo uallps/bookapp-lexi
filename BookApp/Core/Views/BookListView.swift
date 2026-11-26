@@ -19,6 +19,11 @@ struct BookListView: View {
         NavigationStack {
             List {
                 // Filas de las características (controles y resúmenes), antes de los libros.
+#if Importar
+                if config.enableImport {
+                    ImportButton(existingBooks: viewModel.books, addBooks: viewModel.addBooks)
+                }
+#endif
                 ForEach(visibleBooks) { book in
                     bookRow(book: book)
                 }
