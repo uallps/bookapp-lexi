@@ -21,3 +21,4 @@ struct SearchBarView: View {
     }
 }
 #endif
+
