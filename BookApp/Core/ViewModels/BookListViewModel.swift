@@ -36,7 +36,12 @@ final class BookListViewModel {
     /// Cambia el estado de lectura: Pendiente → Leyendo → Leído.
     func changeStatus(id: UUID) {
         guard let index = books.firstIndex(where: { $0.id == id }) else { return }
+        let oldStatus = books[index].status
         books[index].status = books[index].status.next
+        let newStatus = books[index].status
+        if oldStatus != newStatus {
+            PluginRegistry.shared.notifyStatusChanged(of: books[index], to: newStatus)
+        }
     }
 
     func addBook() {
@@ -60,7 +65,11 @@ final class BookListViewModel {
     /// Sustituye el libro que tiene el mismo id (lo usa el detalle al editar).
     func updateBook(_ book: Book) {
         guard let index = books.firstIndex(where: { $0.id == book.id }) else { return }
+        let oldStatus = books[index].status
         books[index] = book
+        if oldStatus != book.status {
+            PluginRegistry.shared.notifyStatusChanged(of: book, to: book.status)
+        }
     }
 
     /// Guarda la lista completa. `_Concurrency.Task` es la tarea asíncrona de Swift.

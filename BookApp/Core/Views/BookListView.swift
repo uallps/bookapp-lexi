@@ -9,6 +9,10 @@ struct BookListView: View {
     /// y de este ViewModel.
     @Environment(ProgressPlugin.self) private var progress
 #endif
+#if FechasLectura
+    /// O10: el plugin de fechas de lectura llega por el entorno.
+    @Environment(ReadingDatesPlugin.self) private var readingDates
+#endif
 
     /// Quien crea la lista decide dónde se guardan los libros.
     init(storageProvider: BookStorageProvider = JSONStorageProvider()) {
@@ -33,7 +37,7 @@ struct BookListView: View {
 
     /// Una fila: enlace al detalle del libro, con menú contextual para borrarlo.
     private func bookRow(book: Book) -> some View {
-        NavigationLink(destination: BookDetailView(book: binding(for: book)) { progressSection(for: book) }) {
+        NavigationLink(destination: BookDetailView(book: binding(for: book)) { progressSection(for: book); datesSection(for: book) }) {
             BookRowView(
                 book: book,
                 showProgress: config.enableProgress,
@@ -74,6 +78,20 @@ struct BookListView: View {
 #if Progreso
         if config.enableProgress {
             BookProgressSection(plugin: progress, bookID: book.id)
+        }
+#else
+        EmptyView()
+#endif
+    }
+
+    // MARK: - O10: Fechas de lectura (punto de variación en compilación)
+
+    /// Sección de fechas del detalle; vacía si O10 no está compilada o su flag está apagado.
+    @ViewBuilder
+    private func datesSection(for book: Book) -> some View {
+#if FechasLectura
+        if config.enableReadingDates {
+            BookDatesSection(plugin: readingDates, bookID: book.id)
         }
 #else
         EmptyView()

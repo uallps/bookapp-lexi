@@ -35,4 +35,18 @@ final class PluginRegistry {
             plugin.didDeleteBook(id: id)
         }
     }
+
+    // MARK: - StatusPlugin: aviso al cambiar de estado
+
+    /// Los plugins que quieren saber cuándo cambia el estado de un libro.
+    private var statusPlugins: [StatusPlugin] {
+        plugins.compactMap { $0 as? StatusPlugin }
+    }
+
+    /// Avisa a los plugins de estado de que un libro ha cambiado de estado.
+    func notifyStatusChanged(of book: Book, to status: ReadingStatus) {
+        for plugin in statusPlugins {
+            plugin.didChangeStatus(of: book, to: status)
+        }
+    }
 }

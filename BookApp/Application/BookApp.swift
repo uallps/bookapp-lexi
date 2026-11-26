@@ -8,6 +8,9 @@ struct BookApp: App {
 #if Progreso
     @State private var progress: ProgressPlugin
 #endif
+#if FechasLectura
+    @State private var readingDates: ReadingDatesPlugin
+#endif
 
     /// Los plugins se crean y se registran una sola vez, al arrancar la app.
     init() {
@@ -15,6 +18,11 @@ struct BookApp: App {
         let progress = ProgressPlugin()
         PluginRegistry.shared.register(progress)
         _progress = State(wrappedValue: progress)
+#endif
+#if FechasLectura
+        let readingDates = ReadingDatesPlugin()
+        PluginRegistry.shared.register(readingDates)
+        _readingDates = State(wrappedValue: readingDates)
 #endif
     }
 
@@ -32,6 +40,9 @@ struct BookApp: App {
             .environment(config)
 #if Progreso
             .environment(progress)
+#endif
+#if FechasLectura
+            .environment(readingDates)
 #endif
 #else
             NavigationSplitView {
@@ -57,6 +68,9 @@ struct BookApp: App {
             .environment(config)
 #if Progreso
             .environment(progress)
+#endif
+#if FechasLectura
+            .environment(readingDates)
 #endif
 #endif
         }

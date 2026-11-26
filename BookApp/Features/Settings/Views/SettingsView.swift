@@ -11,6 +11,9 @@ struct SettingsView: View {
 #if Progreso
                 Toggle("F1: Mostrar progreso de lectura", isOn: $config.enableProgress)
 #endif
+#if FechasLectura
+                Toggle("O10: Mostrar fechas de lectura", isOn: $config.enableReadingDates)
+#endif
                 Toggle("F2: por definir", isOn: $config.enableF2)
                 Toggle("F3: por definir", isOn: $config.enableF3)
                 Toggle("F4: por definir", isOn: $config.enableF4)
