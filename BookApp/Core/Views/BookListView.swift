@@ -13,6 +13,10 @@ struct BookListView: View {
     /// O1: favoritos y su filtro.
     @Environment(FavoritesPlugin.self) private var favorites
 #endif
+#if Sesiones && Progreso
+    /// O5: sesiones de lectura (dependen de F1).
+    @Environment(SessionsPlugin.self) private var sessions
+#endif
 
     /// Quien crea la lista decide dónde se guardan los libros.
     init(storageProvider: BookStorageProvider = JSONStorageProvider()) {
@@ -108,6 +112,12 @@ struct BookListView: View {
 #if Favoritos
         if config.enableFavorites {
             BookFavoriteSection(plugin: favorites, bookID: book.id)
+        }
+#endif
+#if Sesiones && Progreso
+        // O5 requiere F1: con el progreso apagado, tampoco se ven las sesiones.
+        if config.enableSessions && config.enableProgress {
+            BookSessionsSection(plugin: sessions, bookID: book.id)
         }
 #endif
     }

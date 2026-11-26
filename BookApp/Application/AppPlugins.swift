@@ -10,6 +10,10 @@ final class AppPlugins {
 #if Favoritos
     let favorites = FavoritesPlugin()
 #endif
+#if Sesiones && Progreso
+    /// O5 depende de F1: se crea con el plugin de progreso (por eso es `lazy`).
+    lazy var sessions = SessionsPlugin(progress: progress)
+#endif
 
     init() {
 #if Progreso
@@ -17,6 +21,9 @@ final class AppPlugins {
 #endif
 #if Favoritos
         PluginRegistry.shared.register(favorites)
+#endif
+#if Sesiones && Progreso
+        PluginRegistry.shared.register(sessions)
 #endif
     }
 }
@@ -30,6 +37,9 @@ extension View {
 #endif
 #if Favoritos
             .environment(plugins.favorites)
+#endif
+#if Sesiones && Progreso
+            .environment(plugins.sessions)
 #endif
     }
 }

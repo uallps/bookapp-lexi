@@ -24,6 +24,9 @@ final class AppConfig {
     var enableFavorites: Bool {   // O1: Favoritos
         didSet { store(enableFavorites, forKey: "enableFavorites") }
     }
+    var enableSessions: Bool {   // O5: Sesiones de lectura (requiere F1)
+        didSet { store(enableSessions, forKey: "enableSessions") }
+    }
     /// Dónde se guardan los libros. En UserDefaults se guarda su nombre ("JSON", "SwiftData").
     var storageType: StorageType {
         didSet { store(storageType.rawValue, forKey: "storageType") }
@@ -39,6 +42,7 @@ final class AppConfig {
         enableF4 = defaults.object(forKey: "enableF4") as? Bool ?? false
         enableF5 = defaults.object(forKey: "enableF5") as? Bool ?? false
         enableFavorites = defaults.object(forKey: "enableFavorites") as? Bool ?? false
+        enableSessions = defaults.object(forKey: "enableSessions") as? Bool ?? false
         storageType = StorageType(rawValue: defaults.string(forKey: "storageType") ?? "") ?? .json
     }
 

@@ -18,10 +18,14 @@ let package = Package(
     traits: [
         .trait(name: "Progreso", description: "Característica F1: progreso de lectura del libro"),
         .trait(name: "Favoritos", description: "Característica O1: libros favoritos y filtro"),
+        // O5 requiere F1: activar Sesiones activa también Progreso.
+        .trait(name: "Sesiones", description: "Característica O5: sesiones de lectura y racha (requiere F1)",
+               enabledTraits: ["Progreso"]),
         // Producto completo: todas las características de la línea a la vez.
         .trait(name: "Completa", description: "Todas las características", enabledTraits: [
             "Progreso",
             "Favoritos",
+            "Sesiones",
         ]),
     ],
     dependencies: [

@@ -18,6 +18,10 @@ struct SettingsView: View {
 #if Favoritos
                 Toggle("O1: Favoritos", isOn: $config.enableFavorites)
 #endif
+#if Sesiones && Progreso
+                // Requiere F1: sin el progreso activado, las sesiones no se muestran.
+                Toggle("O5: Sesiones de lectura", isOn: $config.enableSessions)
+#endif
             }
 #if canImport(SwiftData)
             // Solo en Apple hay dónde elegir; en Linux y Windows los libros van siempre en JSON.
