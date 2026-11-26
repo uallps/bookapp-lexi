@@ -3,6 +3,7 @@
 #   windows-ui-originales.ps1 Completa    todas las características
 # Activa cada característica en Ajustes, la usa, comprueba la lista y vuelve a abrir la app.
 param([string]$Trait = "Favoritos")
+$sessions = $Trait -in @("Sesiones", "Completa")
 . "$PSScriptRoot/ui.ps1"
 swift build --product BookApp --traits $Trait
 if ($LASTEXITCODE -ne 0) { throw "No compila con el trait $Trait" }
@@ -32,6 +33,16 @@ function Click-FavoritesFilter {
         [math]::Abs(($_.Y + $_.H / 2) - ($count.Y + $count.H / 2)) -lt 20 } | Sort-Object X -Descending | Select-Object -First 1
     return (Click-Surface $button)
 }
+# Botones de la sección Sesiones: los que están justo debajo del resumen «Racha: …»,
+# de izquierda a derecha (0 = «+10 págs», 1 = «+25 págs»).
+function Click-SessionButton([int]$index) {
+    $summary = Get-Controls $w | Where-Object { $_.Text -like "Racha:*" } | Select-Object -First 1
+    if (-not $summary) { return $false }
+    $buttons = @(Get-Controls $w | Where-Object { $_.Class -eq "SwiftUID2DSurface" -and
+        $_.Y -ge ($summary.Y + $summary.H - 4) -and $_.Y -le ($summary.Y + $summary.H + 40) } | Sort-Object X)
+    if ($buttons.Count -le $index) { return $false }
+    return (Click-Surface $buttons[$index])
+}
 function Go-Back {
     if (-not (Click-Text $w "← Back")) { if (-not (Click-Text $w "Back")) { throw "No hay botón para volver" } }
 }
@@ -46,6 +57,11 @@ if ((Count-Like "★ *") -ne 0) { throw "Con O1 apagada no debería verse el fil
 # Ajustes: activar las características.
 if (-not (Click-Sidebar "Ajustes")) { throw "No está Ajustes en la barra lateral" }
 if (-not (Click-Text $w "O1: Favoritos")) { throw "No está el ajuste de O1" }
+if ($sessions) {
+    # O5 requiere F1: se activan las dos.
+    if (-not (Click-Text $w "F1: Mostrar progreso de lectura")) { throw "No está el ajuste de F1" }
+    if (-not (Click-Text $w "O5: Sesiones de lectura")) { throw "No está el ajuste de O5" }
+}
 Snap $w "o-1-ajustes"
 
 # Se vuelve a abrir la app en lugar de volver a Libros por la barra lateral: en Win32,
@@ -62,6 +78,21 @@ if ((Count-Text "★ 0") -ne 1) { throw "No se ve el filtro de favoritos" }
 if (-not (Click-Text $w "1984")) { throw "No está la fila 1984" }
 if (-not (Click-Text $w "Favorito")) { throw "No está el interruptor Favorito en el detalle" }
 Snap $w "o-2-detalle-favorito"
+
+# O5: registrar una sesión suma a la racha y al progreso de F1.
+if ($sessions) {
+    # Se vuelve a abrir el detalle: en Win32, SwiftOpenUI recoloca mal las secciones del
+    # detalle después de un cambio (el interruptor de arriba), y los botones quedarían tapados.
+    Go-Back
+    if (-not (Click-Text $w "1984")) { throw "No está la fila 1984" }
+    Snap $w "o-2a-detalle-sesiones"
+    if ((Count-Like "Racha: 0 días*") -ne 1) { throw "No se ve el resumen de sesiones" }
+    if (-not (Click-SessionButton 1)) { throw "No está el botón «+25 págs»" }
+    Snap $w "o-2b-sesion-registrada"
+    if ((Count-Like "Racha: 1 día · 25 págs*") -ne 1) { throw "La sesión no ha sumado a la racha" }
+    if ((Count-Like "Progreso: 25/300*") -lt 1) { throw "La sesión no ha hecho avanzar el progreso de F1" }
+    if ((Count-Like "Última sesión:*") -ne 1) { throw "No se ve la última sesión" }
+}
 Go-Back
 if ((Count-Text "★ Favorito") -ne 1) { throw "La fila no muestra «★ Favorito»" }
 if ((Count-Text "★ 1") -ne 1) { throw "El contador de favoritos no ha cambiado" }
@@ -81,6 +112,7 @@ if ($app.HasExited) { throw "La app se ha cerrado al volver a abrirla" }
 $w = Get-AppWindow $app.Id
 Snap $w "o-9-tras-reiniciar"
 if ((Count-Text "★ Favorito") -ne 1) { throw "No se ha conservado el favorito" }
+if ($sessions -and (Count-Like "Progreso: 25/300*") -ne 1) { throw "No se ha conservado el progreso de la sesión" }
 
 Stop-Process -Id $app.Id -Force
 Write-Host "Prueba de Windows de las originales ($Trait) superada"
