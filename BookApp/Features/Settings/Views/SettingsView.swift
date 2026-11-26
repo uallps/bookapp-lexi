@@ -3,6 +3,9 @@ import SwiftUI
 /// Pantalla de Ajustes: activa o desactiva las características en ejecución.
 struct SettingsView: View {
     @Environment(AppConfig.self) private var config
+#if Metas
+    @Environment(GoalsPlugin.self) private var goals
+#endif
 
     var body: some View {
         @Bindable var config = config
@@ -15,7 +18,13 @@ struct SettingsView: View {
                 Toggle("F3: por definir", isOn: $config.enableF3)
                 Toggle("F4: por definir", isOn: $config.enableF4)
                 Toggle("F5: por definir", isOn: $config.enableF5)
+#if Metas
+                Toggle("Mostrar meta de lectura", isOn: $config.enableGoals)
+#endif
             }
+#if Metas
+            GoalSettingsSection(plugin: goals)
+#endif
 #if canImport(SwiftData)
             // Solo en Apple hay dónde elegir; en Linux y Windows los libros van siempre en JSON.
             Section(header: Text("Almacenamiento")) {

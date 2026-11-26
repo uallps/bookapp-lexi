@@ -4,6 +4,9 @@ struct BookListView: View {
     @State private var viewModel: BookListViewModel
     /// La configuración la crea la app y llega por el entorno: es la misma que edita Ajustes.
     @Environment(AppConfig.self) private var config
+#if Metas
+    @Environment(GoalsPlugin.self) private var goals
+#endif
 #if Progreso
     /// F1: el plugin de progreso llega por el entorno. Sus datos viven aparte del libro
     /// y de este ViewModel.
@@ -18,6 +21,14 @@ struct BookListView: View {
     var body: some View {
         NavigationStack {
             List {
+#if Metas
+                if config.enableGoals {
+                    GoalSummaryView(
+                        goal: goals.goal(),
+                        completedBooks: viewModel.books.filter { $0.status == .finished }.count
+                    )
+                }
+#endif
                 ForEach(viewModel.books) { book in
                     bookRow(book: book)
                 }

@@ -5,12 +5,20 @@ struct BookApp: App {
     /// Una sola configuración para toda la app: la comparten Libros y Ajustes.
     @State private var config = AppConfig()
     @State private var selection: String? = "libros"
+#if Metas
+    @State private var goals: GoalsPlugin
+#endif
 #if Progreso
     @State private var progress: ProgressPlugin
 #endif
 
     /// Los plugins se crean y se registran una sola vez, al arrancar la app.
     init() {
+#if Metas
+        let goals = GoalsPlugin()
+        PluginRegistry.shared.register(goals)
+        _goals = State(wrappedValue: goals)
+#endif
 #if Progreso
         let progress = ProgressPlugin()
         PluginRegistry.shared.register(progress)
@@ -30,6 +38,9 @@ struct BookApp: App {
                     .tabItem { Label("Ajustes", systemImage: "gearshape") }
             }
             .environment(config)
+#if Metas
+            .environment(goals)
+#endif
 #if Progreso
             .environment(progress)
 #endif
@@ -55,6 +66,9 @@ struct BookApp: App {
                 }
             }
             .environment(config)
+#if Metas
+            .environment(goals)
+#endif
 #if Progreso
             .environment(progress)
 #endif

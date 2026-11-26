@@ -26,6 +26,9 @@ que reexporta SwiftOpenUI, así que `import SwiftUI` funciona sin cambiar el có
 |---|---|---|
 | Base | scheme `BookApp` | `swift run BookApp` |
 | Con progreso (F1) | scheme `BookApp Progreso` (target con `Progreso` en *Active Compilation Conditions*) | `swift run --traits Progreso BookApp` |
+| Metas de lectura (O3) | scheme `BookApp Metas` (target con `Metas` en *Active Compilation Conditions*) | `swift run --traits Metas BookApp` |
+
+O3 cuenta todos los libros con estado «Leído» para el año de la meta. Sin O10 (fechas de lectura), todavía no se puede limitar el recuento a los terminados durante ese año.
 
 ## Almacenamiento (desde la sesión 7)
 
