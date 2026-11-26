@@ -15,6 +15,10 @@ struct BookListView: View {
         _viewModel = State(wrappedValue: BookListViewModel(storageProvider: storageProvider))
     }
 
+    init(viewModel: BookListViewModel) {
+        _viewModel = State(wrappedValue: viewModel)
+    }
+
     var body: some View {
         NavigationStack {
             List {

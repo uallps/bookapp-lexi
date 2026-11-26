@@ -26,6 +26,9 @@ que reexporta SwiftOpenUI, así que `import SwiftUI` funciona sin cambiar el có
 |---|---|---|
 | Base | scheme `BookApp` | `swift run BookApp` |
 | Con progreso (F1) | scheme `BookApp Progreso` (target con `Progreso` en *Active Compilation Conditions*) | `swift run --traits Progreso BookApp` |
+| Lista de deseos (O2) | scheme `BookApp Deseos` (target con `Deseos` en *Active Compilation Conditions*) | `swift run --traits Deseos BookApp` |
+
+El producto base no incluye esas características. Para ejecutarlas se elige el producto correspondiente en Xcode o se activa su trait al ejecutar Swift; cada trait puede combinarse con otros cuando el producto lo necesite.
 
 ## Almacenamiento (desde la sesión 7)
 

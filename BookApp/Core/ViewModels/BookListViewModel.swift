@@ -43,6 +43,13 @@ final class BookListViewModel {
         books.append(Book(title: "Libro de ejemplo", author: "Autor desconocido"))
     }
 
+    /// Añade un libro con los datos proporcionados (por ejemplo, desde Lista de deseos).
+    func addBook(title: String, author: String) {
+        let cleanTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanTitle.isEmpty else { return }
+        books.append(Book(title: cleanTitle, author: author.trimmingCharacters(in: .whitespacesAndNewlines)))
+    }
+
     /// Borra un libro. El ViewModel no sabe qué plugins hay: avisa al registro
     /// antes y después, y el registro avisa a cada plugin de datos (observador).
     func removeBook(id: UUID) {
