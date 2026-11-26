@@ -1,10 +1,10 @@
 import SwiftUI
 
-/// Fila de un libro. No conoce el ViewModel: recibe los flags, el texto de F1 y la acción.
+/// Fila de un libro. No conoce el ViewModel ni las características: recibe las líneas
+/// extra que aportan los plugins activos y la acción de cambiar el estado.
 struct BookRowView: View {
     let book: Book
-    let showProgress: Bool
-    let progressText: String?
+    let extraInfo: [String]
     let changeStatus: () -> Void
 
     var body: some View {
@@ -22,9 +22,9 @@ struct BookRowView: View {
                 }
                 Text(book.status.rawValue)
                     .bookCaption(color: book.status.color)
-                // Punto de variación en ejecución (F1): solo se muestra si el flag está activo.
-                if showProgress, let progressText {
-                    Text(progressText)
+                // Puntos de variación en ejecución: solo llegan las líneas de las características activas.
+                ForEach(extraInfo, id: \.self) { line in
+                    Text(line)
                         .bookCaption()
                 }
             }
