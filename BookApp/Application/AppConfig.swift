@@ -25,6 +25,11 @@ final class AppConfig {
     var storageType: StorageType {
         didSet { store(storageType.rawValue, forKey: "storageType") }
     }
+#if Busqueda
+    var enableBusqueda: Bool {   // O6: Búsqueda y ordenación
+        didSet { store(enableBusqueda, forKey: "enableBusqueda") }
+    }
+#endif
 
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -36,6 +41,9 @@ final class AppConfig {
         enableF4 = defaults.object(forKey: "enableF4") as? Bool ?? false
         enableF5 = defaults.object(forKey: "enableF5") as? Bool ?? false
         storageType = StorageType(rawValue: defaults.string(forKey: "storageType") ?? "") ?? .json
+#if Busqueda
+        enableBusqueda = defaults.object(forKey: "enableBusqueda") as? Bool ?? false
+#endif
     }
 
     private func store(_ value: Any, forKey key: String) {

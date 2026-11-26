@@ -9,16 +9,40 @@ struct BookListView: View {
     /// y de este ViewModel.
     @Environment(ProgressPlugin.self) private var progress
 #endif
+#if Busqueda
+    /// O6: estado de pantalla para búsqueda y orden. No es DataPlugin: no persiste entre sesiones.
+    @State private var libraryQuery = LibraryQuery()
+#endif
 
     /// Quien crea la lista decide dónde se guardan los libros.
     init(storageProvider: BookStorageProvider = JSONStorageProvider()) {
         _viewModel = State(wrappedValue: BookListViewModel(storageProvider: storageProvider))
     }
 
+    // MARK: - Cadena de filtros
+
+    /// Lista de libros visible. Cada característica activa aplica su propio filtro/orden,
+    /// sin pisar los de las demás. Añadir un filtro nuevo = añadir un bloque #if aquí.
+    private var visibleBooks: [Book] {
+        var result = viewModel.books
+        // O6: búsqueda y ordenación (filtro + orden)
+        #if Busqueda
+        if config.enableBusqueda {
+            result = libraryQuery.apply(to: result)
+        }
+        #endif
+        return result
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                ForEach(viewModel.books) { book in
+#if Busqueda
+                if config.enableBusqueda {
+                    SearchBarView(query: libraryQuery)
+                }
+#endif
+                ForEach(visibleBooks) { book in
                     bookRow(book: book)
                 }
             }

@@ -15,6 +15,9 @@ struct SettingsView: View {
                 Toggle("F3: por definir", isOn: $config.enableF3)
                 Toggle("F4: por definir", isOn: $config.enableF4)
                 Toggle("F5: por definir", isOn: $config.enableF5)
+#if Busqueda
+                Toggle("O6: Búsqueda y ordenación", isOn: $config.enableBusqueda)
+#endif
             }
 #if canImport(SwiftData)
             // Solo en Apple hay dónde elegir; en Linux y Windows los libros van siempre en JSON.

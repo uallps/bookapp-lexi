@@ -17,6 +17,7 @@ let package = Package(
     // En Xcode, el mismo papel lo cumple el target «BookApp Progreso».
     traits: [
         .trait(name: "Progreso", description: "Característica F1: progreso de lectura del libro"),
+        .trait(name: "Busqueda", description: "Característica O6: búsqueda y ordenación de libros"),
     ],
     dependencies: [
         .package(url: "https://github.com/uallps/SwiftOpenUI.git", branch: "uallps"),
