@@ -26,6 +26,8 @@ que reexporta SwiftOpenUI, así que `import SwiftUI` funciona sin cambiar el có
 |---|---|---|
 | Base | scheme `BookApp` | `swift run BookApp` |
 | Con progreso (F1) | scheme `BookApp Progreso` (target con `Progreso` en *Active Compilation Conditions*) | `swift run --traits Progreso BookApp` |
+| Con exportar (O7) | scheme `BookApp Exportar` | `swift run --traits Exportar BookApp` |
+| Completa (todas) | — | `swift run --traits Completa BookApp` |
 
 ## Almacenamiento (desde la sesión 7)
 

@@ -19,6 +19,11 @@ struct BookListView: View {
         NavigationStack {
             List {
                 // Filas de las características (controles y resúmenes), antes de los libros.
+#if Exportar
+                if config.enableExport {
+                    ExportButton(books: viewModel.books)
+                }
+#endif
                 ForEach(visibleBooks) { book in
                     bookRow(book: book)
                 }
