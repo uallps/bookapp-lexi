@@ -7,7 +7,7 @@ enum LibraryImporter {
     /// Nombre del fichero que se lee de Documentos.
     static let filename = "books-import.csv"
 
-    struct Result: Equatable {
+    struct Result {
         let books: [Book]
         let ignored: Int
     }
