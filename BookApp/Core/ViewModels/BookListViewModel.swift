@@ -43,6 +43,13 @@ final class BookListViewModel {
         books.append(Book(title: "Libro de ejemplo", author: "Autor desconocido"))
     }
 
+    /// Añade varios libros a la vez: una sola escritura en el almacenamiento
+    /// (los `append` individuales dispararían un guardado por cada libro).
+    func addBooks(_ books: [Book]) {
+        guard !books.isEmpty else { return }
+        self.books.append(contentsOf: books)
+    }
+
     /// Borra un libro. El ViewModel no sabe qué plugins hay: avisa al registro
     /// antes y después, y el registro avisa a cada plugin de datos (observador).
     func removeBook(id: UUID) {
