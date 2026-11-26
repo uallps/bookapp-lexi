@@ -7,10 +7,16 @@ final class AppPlugins {
 #if Progreso
     let progress = ProgressPlugin()
 #endif
+#if Favoritos
+    let favorites = FavoritesPlugin()
+#endif
 
     init() {
 #if Progreso
         PluginRegistry.shared.register(progress)
+#endif
+#if Favoritos
+        PluginRegistry.shared.register(favorites)
 #endif
     }
 }
@@ -21,6 +27,9 @@ extension View {
         self
 #if Progreso
             .environment(plugins.progress)
+#endif
+#if Favoritos
+            .environment(plugins.favorites)
 #endif
     }
 }

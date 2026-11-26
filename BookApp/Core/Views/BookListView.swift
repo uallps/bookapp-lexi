@@ -9,6 +9,10 @@ struct BookListView: View {
     /// y de este ViewModel.
     @Environment(ProgressPlugin.self) private var progress
 #endif
+#if Favoritos
+    /// O1: favoritos y su filtro.
+    @Environment(FavoritesPlugin.self) private var favorites
+#endif
 
     /// Quien crea la lista decide dónde se guardan los libros.
     init(storageProvider: BookStorageProvider = JSONStorageProvider()) {
@@ -19,6 +23,11 @@ struct BookListView: View {
         NavigationStack {
             List {
                 // Filas de las características (controles y resúmenes), antes de los libros.
+#if Favoritos
+                if config.enableFavorites {
+                    FavoritesFilterRow(plugin: favorites, favoriteCount: favorites.count(in: viewModel.books))
+                }
+#endif
                 ForEach(visibleBooks) { book in
                     bookRow(book: book)
                 }
@@ -63,7 +72,12 @@ struct BookListView: View {
     /// Los libros que se muestran: los de la biblioteca que pasan todos los filtros activos.
     /// Los filtros se encadenan: un libro se ve solo si pasa cada uno de ellos.
     private var visibleBooks: [Book] {
-        let books = viewModel.books
+        var books = viewModel.books
+#if Favoritos
+        if config.enableFavorites {
+            books = books.filter(favorites.matches)
+        }
+#endif
         return books
     }
 
@@ -75,6 +89,11 @@ struct BookListView: View {
             info.append(summary)
         }
 #endif
+#if Favoritos
+        if config.enableFavorites, favorites.isFavorite(book.id) {
+            info.append("★ Favorito")
+        }
+#endif
         return info
     }
 
@@ -84,6 +103,11 @@ struct BookListView: View {
 #if Progreso
         if config.enableProgress {
             BookProgressSection(plugin: progress, bookID: book.id)
+        }
+#endif
+#if Favoritos
+        if config.enableFavorites {
+            BookFavoriteSection(plugin: favorites, bookID: book.id)
         }
 #endif
     }

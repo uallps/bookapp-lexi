@@ -17,9 +17,11 @@ let package = Package(
     // En Xcode, el mismo papel lo cumple el target «BookApp Progreso».
     traits: [
         .trait(name: "Progreso", description: "Característica F1: progreso de lectura del libro"),
+        .trait(name: "Favoritos", description: "Característica O1: libros favoritos y filtro"),
         // Producto completo: todas las características de la línea a la vez.
         .trait(name: "Completa", description: "Todas las características", enabledTraits: [
             "Progreso",
+            "Favoritos",
         ]),
     ],
     dependencies: [
@@ -44,6 +46,16 @@ let package = Package(
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
                 .enableUpcomingFeature("InferIsolatedConformances"),
                 .enableUpcomingFeature("MemberImportVisibility"),
+            ]
+        ),
+        // Pruebas de la lógica de las características (sin vistas): `swift test --traits Completa`.
+        .testTarget(
+            name: "BookAppTests",
+            dependencies: ["BookApp"],
+            path: "Tests/BookAppTests",
+            swiftSettings: [
+                .swiftLanguageMode(.v5),
+                .defaultIsolation(MainActor.self),
             ]
         ),
     ]
